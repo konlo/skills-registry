@@ -57,17 +57,21 @@ If this skill fails, all downstream skills must stop.
 
 ## 5. Xcode Creation Procedure (Exact Path)
 
-The assistant MUST instruct the user to follow this exact sequence:
-
-**Xcode**
-→ **File**
-→ **New**
-→ **Project**
-→ **iOS**
-→ **App**
-→ **Interface:** SwiftUI
-→ **Language:** Swift
-→ **Life Cycle:** SwiftUI App
+60: The assistant MUST instruct the user to follow this exact sequence:
+61: 
+62: **Step 0: Project Name**
+63: → Ask the user: "What should be the Project Name?"
+64: 
+65: **Step 1: Xcode Wizard**
+66: → **File**
+67: → **New**
+68: → **Project**
+69: → **iOS**
+70: → **App**
+71: → **Product Name:** (Input User's Answer)
+72: → **Interface:** SwiftUI
+73: → **Language:** Swift
+74: → **Life Cycle:** SwiftUI App
 
 ❗ **Do NOT mention Package, Workspace, or Playground at this stage.**
 
