@@ -23,7 +23,7 @@ skills-registry/
 
 🧷 Project에서는 어떻게 쓰나?
 방법 1️⃣ Git Submodule (가장 깔끔)
-git submodule add https://github.com/you/skills-registry skills
+git submodule add https://github.com/konlo/skills-registry skills
 git submodule update --init --recursive
 
 gostop-ios/
