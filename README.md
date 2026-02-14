@@ -1,6 +1,6 @@
 # skills-registry
 konlo's skills
-
+'''
 skills-registry/
 ├─ apple/
 │  ├─ apple_app_init.skill.yaml
@@ -30,6 +30,6 @@ gostop-ios/
 ├─ GostopApp/
 └─ GostopApp.xcodeproj
 
-
+'''
 ✔ 특정 commit에 pin 가능
 ✔ 실험/운영 분리 가능
