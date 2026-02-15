@@ -261,13 +261,3 @@ Planning → UI → Engine → AI → Binding
 👉 **이건 상업 게임 팀의 정석 구조**야.
 
 ---
-
-## 다음으로 자연스럽게 이어질 단계
-
-이제 딱 이 순서가 좋아 👇
-
-1️⃣ `game_engine_design` ✔  
-2️⃣ `engine_design_document.md` 실제 작성  
-3️⃣ `engine_implementation.skill` (Swift / Pure logic)  
-4️⃣ `ai_decision_design.skill`  
-5️⃣ `ui_interaction_binding.skill`
