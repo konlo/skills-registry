@@ -152,22 +152,40 @@ UI disappears when player focuses on the board
 
 Required Output
 
-This skill must update:
+This skill must update TWO files:
 
-ui_design_document.md
+1. `ui_design_document.md` 
+   - Update the relevant sections to reflect the new UI state.
+   - The design document must always represent the *current* truth.
 
+2. `ui_iteration_log.md` (New File / Append)
+   - Record the entire thought process and execution details here.
 
-Appending:
+### Log Format (Appended to ui_iteration_log.md)
 
-## UI Iteration Log
+Every time this skill runs, append this block:
 
-### Iteration X
-- Change summary
-- UX invariant check
-- Result
+---
+## [YYYY-MM-DD HH:MM] Iteration Log
 
+**User Instruction:**
+> [The specific instruction that triggered this iteration]
 
-No overwrites. Only append.
+**Plan:**
+- [Optimization Target]
+- [Planned Changes]
+
+**Actions Taken:**
+- [Description of specific file edits or command executions]
+
+**UX Invariant Check:**
+- Before: [State/Timing]
+- After: [State/Timing]
+- Verdict: [PASS/FAIL]
+
+---
+
+No overwrites. Only append to the log.
 
 Success Criteria
 

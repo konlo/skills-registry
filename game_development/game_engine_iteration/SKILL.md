@@ -150,6 +150,24 @@ Required Entry Format
 ❌ Overwriting previous entries is forbidden
 ❌ Skipping documentation is forbidden
 
+
+## Usage Logging (MANDATORY)
+
+Every time this skill is used, the following log must be appended to:
+
+engine_skill_usage.md
+
+### Required Usage Log Format
+## Usage Log — <Date>
+
+- **Instruction**: <User Instruction / Trigger>
+- **Plan**: <Brief Plan of Action>
+- **Actions**:
+  - <Action 1>
+  - <Action 2>
+  - ...
+- **Outcome**: Success / Failure
+
 Before / After Validation
 
 Each iteration must confirm:
@@ -182,7 +200,10 @@ The engine change is intentional
 
 The design contract remains intact
 
+
 engine_iteration.md is updated
+
+engine_skill_usage.md is updated
 
 No silent behavior change exists
 
@@ -251,3 +272,18 @@ Engine drift 방지 ✔
 변경 기록 강제 ✔
 
 👉 중소 게임 스튜디오 내부 프로세스 수준이야.
+
+---
+
+## 📄 engine_skill_usage.md (필수 로그 문서)
+
+이 파일은 **Skill 사용 로그**야.
+처음엔 이렇게 시작하면 돼 👇
+
+```md
+# ⚙️ Game Engine Skill Usage Log
+
+This document records every usage of the game_engine_iteration skill, including prompts, plans, and actions.
+
+---
+```
