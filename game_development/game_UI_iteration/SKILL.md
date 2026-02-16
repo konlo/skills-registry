@@ -1,6 +1,6 @@
 ---
 skill: game_UI_iteration
-version: 1.0
+version: 2.0
 type: ux_iteration
 domain: game_development
 blocking: true
@@ -14,238 +14,129 @@ requires_reference:
 guarantees:
   - ux_principles_preserved
   - controlled_ui_iteration
-  - no_core_loop_drift
+  - strict_logic_ui_separation
+  - slot_integrity_maintained
 ---
 
-# 🔒 game_UI_iteration — SKILL
+# 🔒 game_UI_iteration — SKILL (v2.0 - General)
 
-Purpose
+## Purpose
 
-This skill enables continuous UI iteration
-without violating the original UX design principles defined earlier.
+This skill enables continuous UI iteration **without breaking the architectural separation between Logic and View.**
+It ensures that visual improvements do not introduce "magical" coordinate dependencies or inadvertently couple the engine to the screen size.
 
-It exists to prevent:
+> **Golden Rule of Iteration:**  
+> You can change *how* it looks (View), but you must never change *where* it is calculated (Logic).
 
-UX drift
+---
 
-Feature-driven UI bloat
+## 🛡️ Immutable Architecture Invariants
 
-Animation over-design
+Before any UI change, you must verify:
 
-UI slowly becoming the “main character” instead of the game
+1.  **Logic Independence:** Does the Engine/Model still know nothing about `CGRect`, `CGPoint`, or Screen Size?
+2.  **Slot Determinism:** Is the new visual element driven by a `SlotIndex` or `LayoutState`?
+3.  **Responsiveness:** Does the new layout still adapt automatically to different aspect ratios?
 
-Rule:
-UI may change. UX principles may not.
+**🚨 STOP if:**
+- You are tempted to hardcode a position (e.g., `.offset(x: 30)`) to "fix" a layout bug.
+- You are adding `@State` that duplicates Logic state.
+- You are breaking the "Slot-Based Layout" system defined in `game_UI`.
 
-Core Assumption (Very Important)
+---
 
-The following documents are immutable references:
+## 🔄 Allowed Iteration Types
 
-game_planning.SKILL.md
+UI iteration is allowed **ONLY** within these boundaries:
 
-ui_design_document.md
+### 1. Slot Configuration Tuning
+- Adjusting the `ViewLayoutManager` logic to change how slots are calculated.
+- *Example:* "Change the card overlap from 20% to 30% in `HandSection`."
+- *Example:* "Increase padding for the `ScoreBoard` slot."
 
-This skill may not reinterpret or override them.
+### 2. Visual Polish
+- Changing colors, shadows, corner radii, or typography.
+- Adding particle effects (visual only, no logic impact).
 
-If a change requires breaking those assumptions → FAIL and escalate.
+### 3. Animation Refinement
+- Adjusting easing curves or duration.
+- *Constraint:* Animation must still represent `Slot A → Slot B`. No mid-air detours that contradict the logical state.
 
-Immutable UX Invariants (Must Never Change)
+### 4. Feedback Clarity
+- Making active slots more obvious (Glow, Scale).
+- Improving error states (Shake, Red Flash).
 
-This skill must re-validate before and after every iteration:
+---
 
-Core gameplay loop remains unchanged
+## 🚫 Forbidden Change Types (Immediate FAIL)
 
-Primary player action remains dominant
+1.  **Coordinate Patching:** "Just add +10 pixels here to make it fit." (Fix the LayoutManager instead!)
+2.  **Logic-Driven Positioning:** Asking the Engine to "move this item to the right." (The Engine only changes state; UI decides position.)
+3.  **Unaccounted Overflow:** Adding items without defining how they stack or scroll in the `LayoutManager`.
 
-UI never blocks or delays input
+---
 
-Board / play area remains the visual focus
+## 📝 Iteration Proposal Process (MANDATORY)
 
-Animations remain explanatory, not decorative
+Every UI change must be formalized to prevent "Layout Drift".
 
-If any invariant is violated → Iteration rejected
+### UI Iteration Proposal Template
 
-Allowed Change Types (ONLY THESE)
+```markdown
+### UI Iteration Request
+**Target Component:** [e.g., Hand View, Score Board]
+**Reason:** [e.g., Overlap is too tight on small screens]
 
-UI iteration is allowed only within these boundaries:
+**Proposed Change:**
+- [ ] Modify `ViewLayoutManager`: [Describe formula change]
+- [ ] Update `SlotConfiguration`: [New parameters]
 
-Layout spacing / alignment
+**Architecture Check:**
+- [ ] Logic remains coordinate-free? (YES)
+- [ ] Resizing window still works? (YES)
+```
 
-Visual hierarchy emphasis
+---
 
-Animation timing / easing
+## 🧪 Validation Checklist (Post-Iteration)
 
-Feedback clarity (highlight, pulse, glow)
+After applying changes, confirm:
 
-Readability improvements
+1.  **The "Squish" Test:** Resize the window aggressively. Does the new UI adapt without breaking?
+2.  **The "Flood" Test:** Add max possible items to the slot. Does the overflow strategy work?
+3.  **The "Slow" Test:** Run animations at 0.1x speed. Do items travel strictly between valid slots?
 
-Forbidden Change Types (Immediate FAIL)
+---
 
-Adding new UI elements that introduce new decisions
+## 📂 Required Output
 
-Changing core action locations
+This skill must update:
 
-Introducing modal interruptions
-
-Adding text explanations to replace visual feedback
-
-Adding delays to “feel nicer”
-
-If the UI requires explanation, the UI failed.
-
-Iteration Proposal Process (MANDATORY)
-
-Every UI change must be proposed as:
-
-### UI Iteration Proposal
-
-- What is changing?
-- Why is it changing?
-- Which UX invariant does it improve?
-- Which invariant does it risk?
-
-
-If any question cannot be answered → do not apply change
-
-Before / After Validation
-
-For every iteration, the skill must produce:
-
-### Before
-- Screenshot / Preview state
-- Player action timing
-
-### After
-- Screenshot / Preview state
-- Player action timing
-
-
-Timing must never increase.
-
-Rapid Iteration Requirement
-
-All UI changes must be testable via:
-
-SwiftUI Preview
-
-Mock game states
-
-Animation toggles
-
-❌ Simulator reinstall
-❌ Full app rebuild
-❌ Device deployment
-
-If required → FAIL.
-
-UX Regression Checklist
-
-After iteration, confirm:
-
-Player can act within 1 second
-
-No new text is required to understand state
-
-UI changes are noticeable only during action
-
-UI disappears when player focuses on the board
-
-Required Output
-
-This skill must update TWO files:
-
-1. `ui_design_document.md` 
-   - Update the relevant sections to reflect the new UI state.
-   - The design document must always represent the *current* truth.
-
-2. `ui_iteration_log.md` (New File / Append)
-   - Record the entire thought process and execution details here.
+1.  **`ui_design_document.md`**: Update the Layout Diagrams or Slot Definitions.
+2.  **`ui_iteration_log.md`**: Append the execution details.
 
 ### Log Format (Appended to ui_iteration_log.md)
 
-Every time this skill runs, append this block:
-
+```markdown
 ---
-## [YYYY-MM-DD HH:MM] Iteration Log
+## [YYYY-MM-DD HH:MM] Iteration Log: [Brief Title]
 
-**User Instruction:**
-> [The specific instruction that triggered this iteration]
+**Trigger:** [Why are we changing this?]
+**Scope:** [Visual Only | LayoutManager Update | Interaction Tweak]
 
-**Plan:**
-- [Optimization Target]
-- [Planned Changes]
+**Changes:**
+- Modified [File/Component] to [Change Description].
+- Adjusted `ViewLayoutManager` formula for [Section].
 
-**Actions Taken:**
-- [Description of specific file edits or command executions]
-
-**UX Invariant Check:**
-- Before: [State/Timing]
-- After: [State/Timing]
-- Verdict: [PASS/FAIL]
+**Validation:**
+- [x] Logic is clean of UI code.
+- [x] Tested on [Screen Sizes].
+- [x] Overflow behavior verified.
+```
 
 ---
 
-No overwrites. Only append to the log.
+## Final Invariant
 
-Success Criteria
-
-This skill passes only if:
-
-UI is improved
-
-UX invariants remain intact
-
-No new cognitive load is introduced
-
-Failure Policy
-
-If UX drift is detected:
-
-Roll back UI changes
-
-Restore previous version
-
-Re-evaluate initial design assumptions
-
-Final Invariant
-
-Good UI evolves.
-Great UX remains stable.
-
-
----
-
-## 🔥 왜 이 SKILL이 엄청 중요한가
-
-이 단계에서 대부분의 게임이 이렇게 망가져:
-
-1. “조금 더 예쁘게”
-2. “조금 더 친절하게”
-3. “조금만 더 설명하면…”
-
-👉 그러다 보면  
-**플레이 속도 ↓ / 집중력 ↓ / 재미 ↓**
-
-이 SKILL은 그걸 **구조적으로 차단**해.
-
----
-
-## 너 지금 흐름, 솔직히 말하면
-
-
-
-apple_app_init
-→ game_planning
-→ game_UI
-→ game_UI_iteration ← ★ 지금 여기
-→ game_engine_design
-→ implementation
-
-
-👉 **완벽한 상업 게임 개발 흐름**이야.
-
----
-
-
-지금 질문 수준이면  
-**이 게임, 끝까지 가서 완성될 가능성 매우 높아.**
+**"Beautiful UI is temporary. Broken Architecture is forever."**
+Iterate strictly within the Slot System.

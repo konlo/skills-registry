@@ -1,6 +1,6 @@
 ---
 skill: game_UI
-version: 1.0
+version: 3.0
 type: ux_design
 domain: game_development
 blocking: true
@@ -14,139 +14,165 @@ guarantees:
   - action_focused_ui
   - fast_iteration_ux
   - non_intrusive_game_experience
+  - strict_logic_ui_separation
+  - slot_based_layout
 ---
 
-# 🎮 game_UI — SKILL
+# 🎮 game_UI — SKILL (v3.0 - General)
 
 ## Purpose
 
-This skill defines the **UX-first UI blueprint** for a game.
+This skill defines the **UX-first UI blueprint** for any interactive game or application. It strictly enforces the separation of **Logical State (Engine/Model)** and **Visual Representation (View/UI)** to prevent layout bugs, off-screen elements, and resolution dependency.
 
 It ensures that:
-- UI never interrupts gameplay
-- Every player action receives immediate visual feedback
-- Animations clarify intent instead of distracting the player
-- UI/UX can be iterated **without rebuilding or reinstalling the app**
+- UI adapts to any screen size or aspect ratio automatically.
+- Every state change triggers a deterministic visual update.
+- Animations clarify intent (State A → State B) without "magic numbers."
+- UI/UX can be iterated **without rebuilding core logic.**
 
 > **Rule:**  
-> If UI slows down understanding or action, it is a bug — not a feature.
+> The Logic Model calculates *what* happens; the UI Layer calculates *where* it happens.
 
-## Core UX Philosophy (20 years of Apple game UX)
+---
 
-- Players look at the board, not the UI
-- UI exists to explain actions, not decorate screens
-- Animations are not “effects” — they are communication
-- If it takes more than 1 second to understand, it’s wrong
-- The best UX is often barely noticed
+## 🛑 Critical Architecture Rule: Slot-Based Layout
+
+To prevent elements from drifting, overlapping, or breaking on different devices, the following rule is absolute:
+
+> **The Game/App Logic must NEVER know about screen coordinates (x, y).**
+> **The UI must NEVER calculate game state.**
+
+### ❌ The Old (Broken) Way
+1. Logic says: "Move item to (300, 500)"
+2. UI animates to (300, 500)
+3. Screen resizes or Safe Area changes → Item is now floating in void 💥
+
+### ✅ The New (Robust) Way: Slot System
+1. **Logic Model** assigns a **Logical Slot Index** to the entity.
+   - `state: equipped`
+   - `owner: player_1`
+   - `slotIndex: 5`
+2. **UI Layer** (LayoutManager) maps logical index to screen geometry.
+   - `slotIndex(5) → CGRect(x: 50, y: 100, w: 60, h: 60)`
+3. **Animation** moves from `Old Slot → New Slot`.
+4. If screen resizes, `LayoutManager` recalculates the rects. The entity snaps to the new valid position.
+
+---
+
+## 🏗 Mandatory Structural Components
+
+### 1. View Layout Manager (UI Side)
+
+You MUST implement a dedicated manager for calculating slot positions. Feature code should never calculate frames manually.
+
+```swift
+struct LayoutSlot {
+    let index: Int
+    let section: SectionID // e.g., Inventory, Board, Hand
+    let rect: CGRect       // Calculated based on current SafeArea & Screen Size
+}
+
+// Global or Environment Object
+class ViewLayoutManager {
+    func rectForSlot(index: Int, section: SectionID, screenSize: CGSize) -> CGRect {
+        // ... centralized layout logic ...
+        // e.g., return grid calculation
+    }
+}
+```
+
+### 2. Logic Data Structure
+
+The model's representation of an entity must be purely logical.
+
+```swift
+struct EntityState {
+    let id: EntityID
+    let ownerID: PlayerID?
+    let section: SectionID   // e.g., Deck, Field, Discard
+    let slotIndex: Int?      // 0..N (The only positional data logic knows)
+}
+```
+
+---
+
+## 🎨 Animation & Layout Rules
+
+### 1. No "Mid-Air" Correction
+- Animations are simply transitions between two valid states (Slot A → Slot B).
+- Do not add "fudge factors" or manual offsets during animation.
+- If the destination changes (e.g., re-layout), the animation target updates to the new slot rect.
+
+### 2. Constraint & Padding Enforcement
+- **Safe Area:** All slots must be calculated within the Safe Area.
+- **Padding:** A minimum padding from the screen edge is mandatory.
+- **Overflow Strategy:** Define explicit rules for when slots exceed available space:
+    - **Stacking:** Overlap items by X%.
+    - **Scaling:** Shrink items to fit.
+    - **Scroll:** Add a scroll view or pagination.
+    - **Wrap:** Move to next row/column.
+
+*Do not leave overflow behavior undefined.*
+
+### 3. Coordinate Calculation
+- **ONLY** in `ViewLayoutManager` (or `LayoutPass`).
+- **NEVER** in View `body` or `init`.
+- **NEVER** in Business Logic.
+
+---
 
 ## Required UX Questions (MANDATORY)
 
 This skill must explicitly answer and document:
 
-### 1. Primary Player Actions
-
-- What is the single most common action?
-- What is the second most common action?
-- What action ends a session?
-
-👉 UI must be optimized only for these.
+### 1. Primary User Actions
+- What is the most common interaction? (e.g., Tap, Drag, Swipe)
+- What interaction ends a session or turn?
+👉 UI must be optimized for these specific actions.
 
 ### 2. Visual Focus Hierarchy
-
-“Where should the player’s eyes be, by default?”
-
-Define:
-- Primary focus (always visible)
-- Secondary focus (contextual)
-- Tertiary UI (rare, dismissible)
-
-If everything looks important → FAIL.
+- **Primary Focus:** What must always be visible? (e.g., The Board, The Avatar)
+- **Secondary Focus:** Contextual info? (e.g., Hand, Score)
+- **Tertiary UI:** Meta info? (e.g., Settings, Chat)
 
 ### 3. Action → Feedback Mapping (CRITICAL)
-
-For every player action, define:
+Define the feedback for every state change.
 
 | Action | Visual Feedback | Animation Duration |
 | :--- | :--- | :--- |
-| Card play | Card moves + snap | ≤ 300ms |
-| Score change | Number pulse | ≤ 200ms |
-| Go/Stop | Button emphasis | ≤ 150ms |
+| Item Selection | Highlight/Scale Up | ≤ 150ms |
+| State Transition | Move to new Slot | ≤ 300ms |
+| Error/Invalid | Shake/Red Flash | ≤ 200ms |
 
-If an action has no feedback, UX is incomplete.
+---
 
-## Animation Rules (Apple UX Standard)
+## 🧪 UX & Architecture Validation
 
-- Duration: 100ms – 300ms
-- Use easing, never linear
-- No animation should block input
-- Animation must clarify state change
+This skill **FAILS** if any of the following are true:
 
-❌ “Looks cool” is not a valid reason  
-✅ “Explains what happened” is valid
+### 🔍 Architecture Checks
+1. [ ] Does the Business Logic import UI frameworks or use geometric types (`CGPoint`/`CGRect`)?
+2. [ ] Can you resize the window/screen and have all elements snap to valid positions instantly?
+3. [ ] Is there any code that hardcodes positions like `x: 300`?
+4. [ ] Does every visualized entity have a deterministic `slotIndex`?
 
-## Rapid Iteration UX Strategy (VERY IMPORTANT)
+### 🔍 UX Checks
+1. [ ] Do elements ever touch the absolute edge of the screen? (Fail if yes)
+2. [ ] If you add 50 items, do they handle overflow gracefully?
+3. [ ] Are animations fluid (≤ 300ms) and interruptible?
+4. [ ] UI requires logic execution to preview? (Must support Previews/Mock Data)
 
-Never require reinstalling the app to test UI.
-
-### Required Techniques
-
-- SwiftUI Preview-driven UI
-- State-based UI rendering
-- Fake / Mock Game State injection
-- Animation toggles (on/off)
-
-### Mandatory Rule
-
-UI must be previewable without the game engine running
-
-## Preview-Driven UX Workflow
-
-The skill must enforce:
-
-1. UI screens designed as pure functions of state
-2. Multiple preview states:
-    - Game start
-    - Mid-game
-    - Win / Lose
-3. Animation preview isolation
-
-**Example: Preview States**
-```swift
-#Preview("Mid Game") {
-  GameBoardView(state: .mockMidGame)
-}
-```
-
-## UX Validation Checklist
-
-This skill FAILS if:
-
-- UI blocks the board
-- Animations delay player input
-- Player must read text to understand state
-- UI requires engine execution to preview
+---
 
 ## Required Visual Artifacts
 
-This skill must produce:
-
-- UI layout sketches
-- Animation intent descriptions
-- Preview state list
-
-These must be stored in:
-`ui_design_document.md`
-
-## Non-Goals
-
-This skill does NOT:
-- Implement UI code
-- Polish visuals
-- Choose colors or themes
-- Optimize performance
-
-It defines UX structure only.
+The `ui_design_document.md` must include:
+1. **Layout Diagram:** A visual map of sections and slot grids.
+2. **Overflow Rules:** Documentation of how the UI handles capacity limits.
+3. **Z-Index Strategy:** Structuring of layers (Background, Content, Overlay, HUD).
+4. Preview state list.
 
 ## Final Invariant
 
-The player should feel faster than the game.
+**"Logic owns the WHAT. UI owns the WHERE."**
+The interface should feel instantaneous and responsive.
