@@ -16,6 +16,7 @@ guarantees:
   - controlled_ui_iteration
   - strict_logic_ui_separation
   - slot_integrity_maintained
+  - screen_bound_invariant
 ---
 
 # 🔒 game_UI_iteration — SKILL (v2.0 - General)
@@ -37,6 +38,7 @@ Before any UI change, you must verify:
 1.  **Logic Independence:** Does the Engine/Model still know nothing about `CGRect`, `CGPoint`, or Screen Size?
 2.  **Slot Determinism:** Is the new visual element driven by a `SlotIndex` or `LayoutState`?
 3.  **Responsiveness:** Does the new layout still adapt automatically to different aspect ratios?
+4.  **Screen Bound Invariant:** No element may EVER have a coordinate outside the Safe Area visible bounds. (Drifting off-screen is a P0 bug).
 
 **🚨 STOP if:**
 - You are tempted to hardcode a position (e.g., `.offset(x: 30)`) to "fix" a layout bug.
@@ -105,6 +107,7 @@ After applying changes, confirm:
 1.  **The "Squish" Test:** Resize the window aggressively. Does the new UI adapt without breaking?
 2.  **The "Flood" Test:** Add max possible items to the slot. Does the overflow strategy work?
 3.  **The "Slow" Test:** Run animations at 0.1x speed. Do items travel strictly between valid slots?
+4.  **The "Extreme" Test:** Create a `#Preview("Extreme Overflow")` with 50+ items. Confirm no crash and no off-screen drift.
 
 ---
 

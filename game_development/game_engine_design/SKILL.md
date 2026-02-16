@@ -245,6 +245,19 @@ If UI disappears, the game must still fully function.
 
 ---
 
+
+## 🛡️ Safety & Bounds (New Requirement)
+
+To prevent "infinite" UI expansion, the Engine MUST define hard limits for all collections.
+
+- **Max Hand Size:** e.g., 20 cards (even if rules say unlimited).
+- **Max Captured Count:** e.g., 48 cards (deck size).
+- **Max Score:** e.g., 999,999,999.
+
+> **Rule:** The Engine must reject or cap actions that would exceed these bounds, protecting the UI from "impossible" states.
+
+---
+
 ## 🔥 왜 이 SKILL이 중요한가 (진짜 핵심)
 
 - 버그의 80%는 **엔진-UI 결합**에서 발생
