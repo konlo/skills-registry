@@ -74,6 +74,26 @@ def scenario_safety_limit_trigger(agent: TestAgent):
             
         agent.send_user_action("click_useless_button")
 
+def scenario_simulator_sync_test(agent: TestAgent):
+    """
+    Scenario: Connects to a real-time Simulator Bridge and verifies sync.
+    This scenario is intended for use with connection_mode='http'.
+    """
+    logger.info("Running simulator sync test...")
+    
+    # 1. Fetch initial state from the simulator UI
+    initial_state = agent.get_all_information()
+    logger.info(f"Initial Simulator UI State: {initial_state}")
+    
+    # 2. Perform an action that should change the UI visually
+    agent.send_user_action("play_random_card")
+    
+    # 3. Fetch state again to confirm UI/Engine synchronization
+    new_state = agent.get_all_information()
+    logger.info(f"Updated Simulator UI State: {new_state}")
+    
+    assert new_state != initial_state, "Simulator UI did not update after action!"
+
 if __name__ == "__main__":
     # Example Usage:
     # 1. Provide the path to your Apple App's compiled test CLI or interface
@@ -93,6 +113,10 @@ if __name__ == "__main__":
     
     # 5. Repeat tests continuously or a set number of times
     REPEAT_COUNT = 3 # Set to a large number for prolonged stress testing
+    
+    # Example for Simulator Mode:
+    # agent_sim = TestAgent(connection_mode="http", base_url="http://localhost:8080/api")
+    # agent_sim.run_tests(scenarios=[scenario_simulator_sync_test], repeat_count=10)
     
     try:
         agent.run_tests(scenarios=scenarios_to_run, repeat_count=REPEAT_COUNT)

@@ -4,6 +4,8 @@ import os
 import subprocess
 import time
 import traceback
+import urllib.request
+import urllib.error
 from datetime import datetime
 
 # Configure Artifact Directories
@@ -40,6 +42,7 @@ class TestAgent:
     def __init__(self, 
                  app_executable_path: str = None, 
                  connection_mode: str = "cli",
+                 base_url: str = "http://localhost:8080",
                  action_timeout_sec: float = 5.0,
                  max_steps_per_scenario: int = 100,
                  rng_seed: int = None):
@@ -47,12 +50,14 @@ class TestAgent:
         Initializes the Test Agent.
         :param app_executable_path: Path to the Apple App executable (e.g. built CLI tool)
         :param connection_mode: "cli", "http", or "socket" (default uses subprocess CLI)
+        :param base_url: The URL of the Simulator Bridge (if in http mode)
         :param action_timeout_sec: Maximum time to wait for the app to respond to an action.
         :param max_steps_per_scenario: Safety guard against infinite testing loops.
         :param rng_seed: Fixed seed for deterministic testing across runs.
         """
         self.app_executable_path = app_executable_path
         self.connection_mode = connection_mode
+        self.base_url = base_url
         self.action_timeout_sec = action_timeout_sec
         self.max_steps_per_scenario = max_steps_per_scenario
         self.rng_seed = rng_seed
@@ -124,8 +129,23 @@ class TestAgent:
                 return resp
             except json.JSONDecodeError as e:
                 raise RuntimeError(f"Failed to parse JSON response: {response_str}") from e
+        elif self.connection_mode == "http":
+            req_data = json.dumps(command).encode('utf-8')
+            req = urllib.request.Request(self.base_url, data=req_data, method='POST')
+            req.add_header('Content-Type', 'application/json')
+            
+            try:
+                with urllib.request.urlopen(req, timeout=self.action_timeout_sec) as response:
+                    resp_str = response.read().decode('utf-8')
+                    resp = json.loads(resp_str)
+                    logger.debug(f"Received HTTP response: {resp}")
+                    return resp
+            except urllib.error.URLError as e:
+                raise RuntimeError(f"HTTP Connection failed to {self.base_url}: {e.reason}") from e
+            except Exception as e:
+                raise RuntimeError(f"HTTP Request failed: {e}") from e
         else:
-            # Implement HTTP request to the App's testing server (using self.action_timeout_sec)
+            # Implement Socket connection here
             pass
         return {}
 

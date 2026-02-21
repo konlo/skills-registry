@@ -41,7 +41,20 @@ The app SHOULD expose a deterministic JSON state with:
 - `board_state`: Shared game state
 - `rng_seed`: (If applicable) The current random seed
 
-## 5. Determinism & Replay (Recommended)
+## 5. Simulator Bridge (New)
+
+The app SHOULD include a `SimulatorBridge` (a mini network server, e.g., using `GCDWebServer` or lightweight Sockets) to allow real-time synchronization between the Python agent and the UI running in the Simulator.
+- **Protocol**: HTTP/JSON or WebSockets
+- **Port**: Default to a configurable port (e.g., 8080)
+- **Environment**: Should only be active in `DEBUG` or `SIMULATOR` builds.
+
+## 6. Real-time UI Synchronization (Strongly Recommended)
+
+To ensure the test agent reflects the visual state of the Simulator:
+- The `SimulatorBridge` should notify the agent of state changes OR respond to polling with the latest `GameManager` data.
+- User actions sent via the agent should be immediately reflected in the SwiftUI views.
+
+## 7. Determinism & Replay (Recommended)
 
 To ensure reproducible test results, the target app SHOULD support:
 - Setting a fixed RNG seed
@@ -58,7 +71,7 @@ The test agent MUST enforce:
 - Protection against infinite loops
 - Graceful abort with state dump
 
-## 7. Test Artifacts
+## 9. Test Artifacts
 
 Each test run SHOULD generate:
 - Full action log (in `artifacts/logs/`)
@@ -66,14 +79,14 @@ Each test run SHOULD generate:
 - Crash dump on failure (in `artifacts/crash_dumps/`)
 - Reproduction steps in JSON (in `artifacts/repro_steps.json`)
 
-## 8. CI Integration (Optional)
+## 10. CI Integration (Optional)
 
 The test agent SHOULD be runnable:
 - Headless
 - Without UI
 - In CI environments (GitHub Actions, Jenkins, etc.)
 
-## 9. Components in this Skill
+## 11. Components in this Skill
 
 - `test_agent_python/main.py`: The core agent class. Handles logging, repeating tests, exception catching, artifacts generation, and the protocol to talk to the app.
 - `test_agent_python/test_scenarios.py`: Example test suites defining the scenarios to run repetitively.
