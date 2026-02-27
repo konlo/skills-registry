@@ -22,8 +22,9 @@ When this skill is active, the agent MUST follow these steps for **EVERY** reque
 1. **Check for Log File**: Look for `project_progress.md` in the project root. If it doesn't exist, create it using the template provided below.
 2. **Log the Request**: Before performing any major task, append the user's request to the log file.
    - Use the format: `## [YYYY-MM-DD HH:MM:SS] User Request: <Request Content>`
-3. **Log the Process**: During and after the task, document the steps taken.
+3. **Log the Process & Artifacts**: During and after the task, document the steps taken and any artifact updates.
    - Use the format: `- **Action**: <Description of what was done>`
+   - Use the format: `- **Artifact Update**: <Summary of changes in implementation_plan.md, task.md, etc.>`
    - Use the format: `- **Outcome**: <Result of the action>`
 4. **Update Status**: If the overall project status changes, update the "Current Status" section at the top of the file.
 
