@@ -63,12 +63,12 @@ To ensure reproducible test results, the target app SHOULD support:
 
 This allows crash reproduction and regression testing.
 
-## 8. Visual Verification via Screenshots (New)
+## 8. Visual Verification via Screenshots & Recordings (New)
 
-For UI-heavy test scenarios (e.g., card animations, menu transitions), the agent SHOULD programmatically capture screenshots to verify visual state.
-- **Automation**: Use `xcrun simctl io booted screenshot` within the Python agent's `AppConnection` or scenario logic.
-- **Artifacts**: Store these screenshots in `artifacts/screenshots/` and include them in the `walkthrough.md` for visual proof of success.
-- **Comparison**: (Optional) Compare current screenshots against "golden" references to detect visual regressions.
+For UI-heavy test scenarios (e.g., card animations, menu transitions), the agent SHOULD programmatically capture screenshots or videos to verify visual state.
+- **Automation**: Use `xcrun simctl io booted screenshot` or `xcrun simctl io booted recordVideo` within the Python agent's `AppConnection` or scenario logic.
+- **Artifacts**: Store these in `artifacts/screenshots/` or `artifacts/recordings/` and include them in the `walkthrough.md` for visual proof of success.
+- **Comparison**: (Optional) Use video artifacts to identify exactly where an animation sequence diverges from the expected path.
 
 ## 9. Safety & Execution Limits
 

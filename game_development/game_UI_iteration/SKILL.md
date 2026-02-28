@@ -140,17 +140,21 @@ This skill must update:
 
 ---
 
-## 📸 Visual Debugging via Simulator Screenshots
+## 📸 Visual Debugging via Simulator Screenshots & Recordings
 
 When debugging complex animations or "teleporting" issues, reliance on real-time observation is insufficient.
 
 ### 1. Mandatory Frame Capture
-- For P0 UI bugs (flickering, displacement), you MUST capture the sequence using the simulator's screenshot tool.
-- Command: `xcrun simctl io booted screenshot <filename>.png`
+- For P0 UI bugs (flickering, displacement), you MUST capture the sequence using the simulator's screenshot or recording tools.
+- **Screenshot:** `xcrun simctl io booted screenshot <filename>.png`
+- **Recording:** `xcrun simctl io booted recordVideo <filename>.mp4`
 - Capture at least three states: **Pre-animation, Mid-animation, Post-animation.**
 
-### 2. Slow-Motion Validation
-- Use the Simulator's "Slow Animations" feature (`Cmd + T`) while taking screenshots to identify the exact frame where continuity breaks.
+### 2. Full Flow Validation (Video)
+- Use screen recordings to capture the entire transition flow. This is mandatory for debugging easing curves and multi-step animations (e.g., Board → Table → Acquisition).
+
+### 3. Slow-Motion Validation
+- Use the Simulator's "Slow Animations" feature (`Cmd + T`) while recording to identify the exact frame where continuity breaks.
 
 ---
 
