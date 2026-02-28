@@ -121,6 +121,26 @@ struct EntityState {
 
 ---
 
+## 🔄 Visual Handover & Animation Continuity
+
+To prevent "teleporting" or "flickering" (where an item disappears and reappears at a new location), the following rules apply:
+
+### 1. The Handover Rule
+When an entity moves between two logical sections (e.g., Board → Player Area):
+- The **Visual Component** must not be destroyed and recreated.
+- The **Animation's Start Position** MUST be the exact current visual coordinate of the entity *before* the logic update.
+- If the section change involves a parent view switch, use a **Global Overlay** or `matchedGeometryEffect` to maintain visual continuity.
+
+### 2. Start-Position Integrity
+- Never assume an item starts at `(0,0)` of a new slot.
+- Always capture the `rect` of the **Source Slot** before beginning the transition to the **Destination Slot**.
+- The transition must be a single, uninterrupted path from `Source.rect.center` to `Destination.rect.center`.
+
+### 3. State-Animation Sync
+- If a state change occurs *during* an existing animation, the new animation must start from the **Current Mid-Air Position**, not the original start or the previous target.
+
+---
+
 ## Required UX Questions (MANDATORY)
 
 This skill must explicitly answer and document:

@@ -27,6 +27,10 @@ When this skill is active, the agent MUST follow these steps for **EVERY** reque
    - Use the format: `- **Artifact Update**: <Summary of changes in implementation_plan.md, task.md, etc.>`
    - Use the format: `- **Outcome**: <Result of the action>`
 4. **Update Status**: If the overall project status changes, update the "Current Status" section at the top of the file.
+5. **Handle Summary Requests**: If asked to "summarize today's work" or similar:
+   - Read the `project_progress.md` file.
+   - Extract all entries for the requested date (defaulting to the current date).
+   - Provide a structured, bulleted summary of the User Requests, Actions, and Outcomes.
 
 ## 3. Log File Template (`project_progress.md`)
 

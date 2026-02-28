@@ -107,7 +107,8 @@ After applying changes, confirm:
 1.  **The "Squish" Test:** Resize the window aggressively. Does the new UI adapt without breaking?
 2.  **The "Flood" Test:** Add max possible items to the slot. Does the overflow strategy work?
 3.  **The "Slow" Test:** Run animations at 0.1x speed. Do items travel strictly between valid slots?
-4.  **The "Extreme" Test:** Create a `#Preview("Extreme Overflow")` with 50+ items. Confirm no crash and no off-screen drift.
+4.  **The "Continuity Test (Handover)":** Verify that an item moving from Slot A (Section 1) to Slot B (Section 2) does not flicker, disappear, or teleport. (State transition must be visibly seamless).
+5.  **The "Extreme" Test:** Create a `#Preview("Extreme Overflow")` with 50+ items. Confirm no crash and no off-screen drift.
 
 ---
 

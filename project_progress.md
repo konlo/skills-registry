@@ -14,7 +14,7 @@
 - **Artifact Update**: Created `implementation_plan.md`, `task.md`, and `walkthrough.md`.
 - **Outcome**: A new skill is available to automate project logging.
 
-### [2026-02-27 20:37:48] User Request: artifact 가 업데이트 될 때마다 프로젝트 내용을 저장하는 것으로 수정할 수 있을까 ?
-- **Action**: Updated `project_logger/SKILL.md` to include artifact update tracking.
-- **Artifact Update**: Updated `implementation_plan.md` and `task.md`.
-- **Outcome**: The skill now explicitly requires logging whenever artifacts are changed.
+### [2026-02-27 20:46:47] User Request: 아 그리고 이 skill 에서 오늘 한 일에 대해서 정리해주라고 하면 project_progress.md 파일을 로딩해서 요약할 수 있도록 기능을 추가 해줘
+- **Action**: Updated `project_logger/SKILL.md` to include a daily summary feature.
+- **Artifact Update**: Updated `implementation_plan.md`, `task.md`, and `walkthrough.md`.
+- **Outcome**: The skill now supports generating summaries of activities by reading the log file.
