@@ -63,7 +63,14 @@ To ensure reproducible test results, the target app SHOULD support:
 
 This allows crash reproduction and regression testing.
 
-## 6. Safety & Execution Limits
+## 8. Visual Verification via Screenshots (New)
+
+For UI-heavy test scenarios (e.g., card animations, menu transitions), the agent SHOULD programmatically capture screenshots to verify visual state.
+- **Automation**: Use `xcrun simctl io booted screenshot` within the Python agent's `AppConnection` or scenario logic.
+- **Artifacts**: Store these screenshots in `artifacts/screenshots/` and include them in the `walkthrough.md` for visual proof of success.
+- **Comparison**: (Optional) Compare current screenshots against "golden" references to detect visual regressions.
+
+## 9. Safety & Execution Limits
 
 The test agent MUST enforce:
 - Max steps per scenario
