@@ -14,6 +14,7 @@ This skill provides instructions for:
 2. Logging every user request with a timestamp.
 3. Documenting the agent's actions, decisions, and outcomes.
 4. Keeping a persistent record of the project's journey.
+5. Performing a "Daily Wrap-up" to summarize key issues and outline next steps for future sessions.
 
 ## 2. Usage Instructions
 
@@ -27,10 +28,12 @@ When this skill is active, the agent MUST follow these steps for **EVERY** reque
    - Use the format: `- **Artifact Update**: <Summary of changes in implementation_plan.md, task.md, etc.>`
    - Use the format: `- **Outcome**: <Result of the action>`
 4. **Update Status**: If the overall project status changes, update the "Current Status" section at the top of the file.
-5. **Handle Summary Requests**: If asked to "summarize today's work" or similar:
-   - Read the `project_progress.md` file.
-   - Extract all entries for the requested date (defaulting to the current date).
-   - Provide a structured, bulleted summary of the User Requests, Actions, and Outcomes.
+5. **Daily Wrap-up (End of Day/Session)**: When the user indicates the end of a session (e.g., "wrap up", "summarize today's work"):
+   - Review all activities logged for the current date.
+   - Provide a structured summary of the user requests, actions, and outcomes.
+   - Summarize the **Key Accomplishments** and **Major Issues Encountered**.
+   - Create or update the **Next Action Items** section with pending tasks, unresolved issues, or notes for the next development session.
+   - Update the "Current Status" section to reflect the end-of-day state.
 
 ## 3. Log File Template (`project_progress.md`)
 
@@ -41,6 +44,23 @@ When this skill is active, the agent MUST follow these steps for **EVERY** reque
 - **Last Updated**: [YYYY-MM-DD]
 - **Status**: [In Progress / On Hold / Completed]
 - **Summary**: [Brief summary of the current state]
+- **Next Session Focus**: [Brief description of what needs to be done next]
+
+---
+
+## Next Action Items (Pending tasks for the next session)
+- [ ] List specific, actionable tasks to pick up next.
+- [ ] Note any unresolved issues here.
+
+---
+
+## Daily Wrap-ups
+
+### [YYYY-MM-DD] Daily Summary
+- **Key Accomplishments**: 
+  - Log completed tasks.
+- **Major Issues Encountered**: 
+  - Log any blockers or significant issues, and how they were resolved or if they remain.
 
 ---
 
