@@ -160,6 +160,7 @@ The document must be:
 - Structured
 - Implementation-ready
 - Used as the single source of truth for all next skills
+- **Next Step**: Proceed to `agent_orchestration` to delegate work.
 
 ---
 
